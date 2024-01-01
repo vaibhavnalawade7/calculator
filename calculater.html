@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #result {
+            width: 260px;
+            height: 50px;
+            margin-bottom: 10px;
+            font-size: 24px;
+            padding: 5px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+        button {
+            width: 60px;
+            height: 50px;
+            font-size: 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #eee;
+        }
+    </style>
+</head>
+<body>
+    <textarea name="result" id="result" cols="10" rows="10"></textarea>
+    <br>
+    <button id="1" value="1">1</button>
+    <button id="2" value="2">2</button>
+    <button id="3" value="3">3</button>
+    <button id="+" value="+">+</button>
+    <br>
+    <button id="4" value="4">4</button>
+    <button id="5" value="5">5</button>
+    <button id="6" value="6">6</button>
+    <button id="-" value="-">-</button>
+    <br>
+    <button id="7" value="7">7</button>
+    <button id="8" value="8">8</button>
+    <button id="9" value="9">9</button>
+    <button id="=" value="=">=</button>
+    <br>
+    <button id="0" value="0">0</button>
+    <button id="*" value="*">*</button>
+    <button id="/" value="/">/</button>
+    <button id="clear" value="clear">Clear</button><br>
+    <button id="showHistory" value="showHistory" style="width: fit-content;">History</button>
+    <div id="historyContainer"></div>
+
+    <script>
+        const resultTextArea = document.getElementById('result');
+        const historyContainer = document.getElementById('historyContainer');
+
+        const history = JSON.parse(localStorage.getItem('calculatorHistory')) || [];
+
+        function updateResult(value) {
+            resultTextArea.value += value;
+        }
+
+        function clearResult() {
+            resultTextArea.value = '';
+        }
+
+        function calculateResult() {
+            const expression = resultTextArea.value.trim();
+            if (expression === '') return;
+
+            try {
+                const result = eval(expression);
+                resultTextArea.value = result;
+                history.push(expression + ' = ' + result);
+                localStorage.setItem('calculatorHistory', JSON.stringify(history));
+            } catch (error) {
+                resultTextArea.value = 'Error';
+            }
+        }
+
+        function showHistory() {
+            historyContainer.innerHTML = '<h3>Calculation History</h3>';
+            const ul = document.createElement('ul');
+            history.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = entry;
+                ul.appendChild(li);
+            });
+            historyContainer.appendChild(ul);
+        }
+
+        const buttons = document.getElementsByTagName('button');
+        for (const button of buttons) {
+            button.addEventListener('click', function () {
+                const value = this.value;
+                if (value === '=') {
+                    calculateResult();
+                } else if (value === 'clear') {
+                    clearResult();
+                } else if (value === 'showHistory') {
+                    showHistory();
+                } else {
+                    updateResult(value);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
